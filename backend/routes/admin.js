@@ -6,7 +6,7 @@ import { userSignin, userSignup } from "../types.js";
 
 const adminRouter = Router();
 
-const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET;
+const ADMIN_SECRET = process.env.ADMIN_JWT_SECRET;
 
 adminRouter.post("/signup", async function (req, res) {
   try {
@@ -28,7 +28,7 @@ adminRouter.post("/signup", async function (req, res) {
 
     const token = jwt.sign(
       { userId: admin._id, email: admin.email },
-      ADMIN_JWT_SECRET,
+      ADMIN_SECRET,
       { expiresIn: "1h" }
     );
     res.json({
@@ -57,7 +57,7 @@ adminRouter.post("/signin", async function (req, res) {
 
     const token = jwt.sign(
       { userId: admin._id, email: admin.email },
-      ADMIN_JWT_SECRET,
+      ADMIN_SECRET,
       { expiresIn: "1h" }
     );
     res.json({

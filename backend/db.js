@@ -44,7 +44,7 @@ const userSchema = new mongoose.Schema({
     minLength: 3,
     maxLength: 100,
   },
-});
+}, {timestamps: true});
 
 const adminSchema = new mongoose.Schema({
   firstName: {
@@ -76,7 +76,7 @@ const adminSchema = new mongoose.Schema({
     minLength: 3,
     maxLength: 100,
   },
-});
+}, {timestamps: true});
 
 const courseSchema = new mongoose.Schema({
   title: {
@@ -93,7 +93,7 @@ const courseSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Admin",
   },
-});
+}, {timestamps: true});
 
 const purchaseSchema = new mongoose.Schema({
   userId: {
@@ -104,7 +104,7 @@ const purchaseSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Purchase",
   },
-});
+}, {timestamps: true});
 
 export const User = mongoose.model("User", userSchema);
 export const Admin = mongoose.model("Admin", adminSchema);
