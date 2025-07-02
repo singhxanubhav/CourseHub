@@ -1,6 +1,6 @@
 import { Router } from "express";
 import bcrypt from "bcrypt";
-import { Admin } from "../db.js";
+import { Admin, Course } from "../db.js";
 import jwt from "jsonwebtoken";
 import { userSignin, userSignup } from "../types.js";
 
@@ -68,21 +68,77 @@ adminRouter.post("/signin", async function (req, res) {
   }
 });
 
-adminRouter.post("/course", function (req, res) {
+adminRouter.post("/course", async function (req, res) {
+  const adminId = req.userId;
+
+  const { title, description, price, imageUrl } = req.body;
+
+  const course = await Course.create({
+    title: title,
+    description: description,
+    price: price,
+    imageUrl: imageUrl,
+    creatorId: adminId,
+  });
+
   res.json({
-    message: "course created",
+    message: "Course Created",
+    courseId: course._id,
   });
 });
 
-adminRouter.put("/course", function (req, res) {
+adminRouter.put("/course", async function (req, res) {
+  const adminId = req.userId;
+
+  const { title, description, price, imageUrl, courseId } = req.body;
+
+  const courseExists = Course.findOne({
+    _id: courseId,
+    creatorId: adminId,
+  });
+
+  if (!courseExists) {
+    res.json({
+      message: "Course does not exist",
+    });
+  }
+
+  const course = await Course.updateOne(
+    {
+      _id: courseId,
+      creatorId: adminId,
+    },
+    {
+      title: title,
+      description: description,
+      price: price,
+      imageUrl: imageUrl,
+    }
+  );
+
   res.json({
-    message: "Course updated",
+    message: "Course Updated",
+    courseId: course._id,
   });
 });
 
-adminRouter.get("/course/bulk", function (req, res) {
+adminRouter.get("/course/bulk", async function (req, res) {
+  const adminId = req.userId;
+
+  const course = await Course.find(
+    {
+      creatorId: adminId,
+    },
+    {
+      title: title,
+      description: description,
+      imageUrl: imageUrl,
+      price: price,
+    }
+  );
   res.json({
-    message: "get all courses",
+    message: "All Course",
+    course,
   });
 });
 
