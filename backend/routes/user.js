@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import { User } from "../db.js";
 import jwt from "jsonwebtoken";
 import { userSignin, userSignup } from "../types.js";
+import userMiddleware from "../middleware/user.js";
 const userRouter = Router();
 
 const USER_JWT_SECRET = process.env.USER_JWT_SECRET;
@@ -26,7 +27,7 @@ userRouter.post("/signup", async function (req, res) {
     });
 
     const token = jwt.sign(
-      { userId: user._id, email: user.email },
+      { userId: user._id},
       USER_JWT_SECRET,
       { expiresIn: "1h" }
     );
@@ -55,7 +56,7 @@ userRouter.post("/signin", async function (req, res) {
     }
 
     const token = jwt.sign(
-      { userId: user._id, email: user.email },
+      { userId: user._id},
       USER_JWT_SECRET,
       { expiresIn: "1h" }
     );
@@ -67,10 +68,27 @@ userRouter.post("/signin", async function (req, res) {
   }
 });
 
-userRouter.post("/purchases", function (req, res) {
-  res.json({
-    message: "Signup succeeded",
-  });
+userRouter.post("/purchases", userMiddleware,  async function (req, res) {
+  const userId = req.userId;
+
+    const purchases = await purchaseModel.find({
+        userId,
+    });
+
+    let purchasedCourseIds = [];
+
+    for (let i = 0; i<purchases.length;i++){ 
+        purchasedCourseIds.push(purchases[i].courseId)
+    }
+
+    const coursesData = await courseModel.find({
+        _id: { $in: purchasedCourseIds }
+    })
+
+    res.json({
+        purchases,
+        coursesData
+    })
 });
 
 export default userRouter;
